@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Quest: Places & To Be</title>
+    <style>
+        :root {
+            --emerald: #1b4d3e;
+            --emerald-light: #2d6a4f;
+            --gold: #c5a059;
+            --gold-light: #e0c58f;
+            --sand: #f9f6f0;
+            --ivory: #fffdf9;
+            --ink: #2c2c2c;
+            --danger: #a63a3a;
+            --success: #2d6a4f;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: var(--sand);
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(197, 160, 89, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(27, 77, 62, 0.06) 0%, transparent 45%);
+            color: var(--ink);
+            line-height: 1.7;
+            margin: 0;
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 820px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+            color: var(--gold-light);
+            padding: 35px 25px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(27, 77, 62, 0.25);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--gold);
+        }
+
+        header::before {
+            content: "✈";
+            position: absolute;
+            font-size: 180px;
+            opacity: 0.06;
+            top: -40px;
+            right: -20px;
+            transform: rotate(-15deg);
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 10px, transparent 10px, transparent 20px);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+            letter-spacing: 2px;
+            font-weight: normal;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .subtitle {
+            margin: 10px 0 0;
+            font-size: 15px;
+            font-style: italic;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .route {
+            margin-top: 15px;
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            z-index: 1;
+        }
+
+        .task-card {
+            background: var(--ivory);
+            border-radius: 6px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            position: relative;
+        }
+
+        .task-card::before {
+            content: "";
+            position: absolute;
+            top: 15px; right: 15px;
+            width: 50px; height: 50px;
+            border: 2px dashed var(--gold);
+            border-radius: 50%;
+            opacity: 0.4;
+            background: radial-gradient(circle, transparent 40%, rgba(197, 160, 89, 0.1) 41%);
+        }
+
+        .task-card::after {
+            content: "★";
+            position: absolute;
+            top: 30px; right: 35px;
+            font-size: 14px;
+            color: var(--gold);
+            opacity: 0.5;
+        }
+
+        .task-title {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 12px;
+        }
+
+        .task-instruction {
+            font-size: 15px;
+            color: #5a5a5a;
+            margin: 15px 0 20px;
+            font-style: italic;
+            padding-left: 15px;
+            border-left: 3px solid var(--gold-light);
+        }
+
+        .task-instruction .form-note {
+            display: block;
+            margin-top: 6px;
+            font-style: normal;
+            font-size: 13px;
+            color: var(--emerald);
+            background: #f5f1e8;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed rgba(197, 160, 89, 0.4);
+            position: relative;
+        }
+
+        .question-block:last-child { border-bottom: none; margin-bottom: 0; }
+
+        .question-text {
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 180px;
+            padding: 12px 16px;
+            border: 1.5px solid #d4c9b3;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            background-color: #fdfbf7;
+            transition: all 0.3s;
+            outline: none;
+            color: var(--ink);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.1);
+            background-color: #fff;
+        }
+
+        input[type="text"].correct {
+            border-color: var(--success);
+            background-color: #eaf3ee;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        input[type="text"].incorrect {
+            border-color: var(--danger);
+            background-color: #f9eded;
+        }
+
+        button.check-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+            color: var(--gold-light);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        button.check-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--emerald-light) 0%, var(--emerald) 100%);
+            box-shadow: 0 4px 12px rgba(27, 77, 62, 0.3);
+            transform: translateY(-1px);
+        }
+
+        button.check-btn:disabled {
+            background: #b0b0b0;
+            border-color: #999;
+            color: #eee;
+            cursor: default;
+        }
+
+        .hint-box {
+            margin-top: 12px;
+            padding: 12px 18px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+            position: relative;
+            padding-left: 45px;
+        }
+
+        .hint-box::before {
+            position: absolute;
+            left: 15px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+
+        .hint-box.hint-1 {
+            background-color: #fdf8ec;
+            color: #7a5c1e;
+            border-left: 4px solid var(--gold);
+        }
+        .hint-box.hint-1::before { content: "🧭"; }
+
+        .hint-box.hint-2 {
+            background-color: #fcf0e4;
+            color: #8a4b1c;
+            border-left: 4px solid #d17a3a;
+        }
+        .hint-box.hint-2::before { content: "🗺️"; }
+
+        .hint-box.answer {
+            background-color: #eaf3ee;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+            font-weight: bold;
+        }
+        .hint-box.answer::before { content: "✅"; }
+
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            display: none;
+            padding-left: 5px;
+        }
+
+        .feedback.correct { color: var(--success); display: block; }
+        .feedback.incorrect { color: var(--danger); display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .example {
+            background: #f5f1e8;
+            padding: 14px 18px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #5a5a5a;
+            border: 1px dashed var(--gold);
+            position: relative;
+        }
+        .example::before { content: "📌 "; font-size: 14px; }
+        .example b { color: var(--emerald); }
+
+        .route-divider {
+            text-align: center;
+            margin: 10px 0 30px;
+            color: var(--gold);
+            font-size: 20px;
+            letter-spacing: 8px;
+            opacity: 0.6;
+        }
+
+        .results-card {
+            background: linear-gradient(135deg, var(--ivory) 0%, #fdfbf7 100%);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            padding: 35px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-card::before {
+            content: "🏆";
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 40px;
+            opacity: 0.15;
+        }
+
+        .results-title {
+            font-size: 24px;
+            color: var(--emerald);
+            margin: 0 0 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .results-subtitle {
+            font-size: 15px;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .results-summary {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .summary-item {
+            flex: 1;
+            min-width: 140px;
+            background: #f5f1e8;
+            padding: 20px 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--gold);
+            text-align: center;
+        }
+
+        .summary-item.highlight {
+            background: linear-gradient(135deg, #eaf3ee 0%, #f5f1e8 100%);
+            border-left: 4px solid var(--emerald);
+        }
+
+        .summary-item .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--emerald);
+            line-height: 1;
+        }
+
+        .summary-item .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .report-section {
+            margin-top: 25px;
+        }
+
+        .report-section h3 {
+            color: var(--emerald);
+            font-size: 17px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--gold-light);
+            padding-bottom: 8px;
+        }
+
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-list li {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            border-left: 3px solid #ccc;
+            background: #faf8f3;
+        }
+
+        .report-list li.perfect {
+            border-left-color: var(--success);
+            background: #eaf3ee;
+        }
+
+        .report-list li.problem {
+            border-left-color: var(--danger);
+            background: #f9eded;
+        }
+
+        .report-list li.hint-used {
+            border-left-color: var(--gold);
+            background: #fdf8ec;
+        }
+
+        .report-list li b {
+            color: var(--emerald);
+        }
+
+        .report-empty {
+            color: #999;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .share-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-light) 100%);
+            color: var(--gold-light);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .share-btn:hover {
+            background: linear-gradient(135deg, var(--emerald-light) 0%, var(--emerald) 100%);
+            box-shadow: 0 4px 12px rgba(27, 77, 62, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .copy-notice {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 18px;
+            background: #eaf3ee;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 22px; }
+            header .route { font-size: 11px; letter-spacing: 2px; }
+            .task-card { padding: 20px; }
+            .task-title { font-size: 18px; }
+            .input-group { flex-direction: column; align-items: stretch; }
+            button.check-btn { width: 100%; }
+            .task-card::before, .task-card::after { display: none; }
+            .results-card { padding: 20px; }
+            .summary-item .number { font-size: 24px; }
+            .summary-item { min-width: 100px; padding: 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>✈ Travel Quest</h1>
+        <p class="subtitle">Places · Adjectives · The Verb "To Be"</p>
+        <div class="route">— TURKEY ✦ EGYPT ✦ VIETNAM ✦ THAILAND —</div>
+    </header>
+
+    <!-- ЗАДАНИЕ 1 -->
+    <div class="task-card" data-task-name="Task 1: Welcome to the City (утверждение)">
+        <div class="task-title">🌍 Task 1: Welcome to the City</div>
+        <div class="task-instruction">
+            Вставь правильную форму глагола <b>to be</b> (am, is, are) в утвердительных предложениях.
+            <span class="form-note">💡 Можно писать как полные, так и краткие формы.</span>
+        </div>
+        <div class="example">
+            <b>Example:</b> The capital <b>is</b> modern.
+        </div>
+
+        <div class="question-block" data-answer="is" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">1. The beach <input type="text" placeholder="..."> beautiful.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Посмотри на подлежащее. Кого или что ты описываешь? Один предмет или несколько?</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Если ты говоришь об одном предмете (he/she/it), какая форма to be подойдёт?</div>
+            <div class="hint-box answer">✅ Правильный ответ: is</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">2. The streets <input type="text" placeholder="..."> noisy.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Сколько улиц? Одна или много? Это влияет на выбор глагола.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Если предметов несколько (they), какую форму to be ты выберешь?</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="am" data-topic="to be: I (утверждение)">
+            <div class="question-text">3. I <input type="text" placeholder="..."> in the capital now.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Кто подлежащее? Вспомни, у глагола to be есть особые формы для каждого местоимения.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Ты говоришь о себе. Как звучит to be для "I"?</div>
+            <div class="hint-box answer">✅ Правильный ответ: am</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">4. My town <input type="text" placeholder="..."> very old.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: My town — это один объект или много? От этого зависит выбор.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Город (town) — это he/she/it. Какой to be ставим после него?</div>
+            <div class="hint-box answer">✅ Правильный ответ: is</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">5. The coasts <input type="text" placeholder="..."> beautiful.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Coasts — это побережья. Сколько их? Это подскажет форму глагола.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Множественное число требует одной из форм to be. Какой?</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">6. The village <input type="text" placeholder="..."> quiet.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Village — одна деревня. Какая форма to be ей подойдёт?</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Единственное число (it) требует определённой формы.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">7. The islands <input type="text" placeholder="..."> modern.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Islands — это много островов. Подумай, какая форма to be нужна.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для нескольких предметов (they) выбери подходящую форму.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <div class="route-divider">✦ ✦ ✦</div>
+
+    <!-- ЗАДАНИЕ 2 -->
+    <div class="task-card" data-task-name="Task 2: Not My Type (отрицание)">
+        <div class="task-title">🚫 Task 2: Not My Type</div>
+        <div class="task-instruction">
+            Составь <b>отрицательные</b> предложения. Вставь <b>is not / are not / am not</b>.
+            <span class="form-note">💡 Можно писать полную форму (is not) или краткую (isn't, aren't).</span>
+        </div>
+        <div class="example">
+            <b>Example:</b> My village <b>is not</b> crowded. = My village <b>isn't</b> crowded.
+        </div>
+
+        <div class="question-block" data-answer="is not|isn't" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">1. Downtown <input type="text" placeholder="..."> cheap.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Ты хочешь сказать, что что-то НЕ является таким. Где должна стоять частица not?</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для единственного числа (it) возьми форму to be и добавь к ней not. Можно сократить: is + not = isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is not (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are not|aren't" data-topic="to be: they (отрицание)">
+            <div class="question-text">2. The beaches <input type="text" placeholder="..."> quiet.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Пляжей много. Как изменится глагол to be? И не забудь про отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для множественного числа (they) поставь нужную форму to be + not. Можно сократить: are + not = aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are not (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="am not" data-topic="to be: I (отрицание)">
+            <div class="question-text">3. I <input type="text" placeholder="..."> from a big city.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Ты говоришь о себе и хочешь всё отрицать. Какая форма to be подходит для "I"?</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для "I" форма to be + not. Вспомни, как звучит am в отрицании — am not.</div>
+            <div class="hint-box answer">✅ Правильный ответ: am not</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is not|isn't" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">4. The island <input type="text" placeholder="..."> modern.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: The island — это единственное число. Значит, форма to be будет такой же, как для he/she/it.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Поставь подходящую форму to be и добавь not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is not (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are not|aren't" data-topic="to be: they (отрицание)">
+            <div class="question-text">5. The streets <input type="text" placeholder="..."> clean.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Улиц несколько. Нужно отрицание для множественного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they возьми форму to be + not. Можно сократить: aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are not (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is not|isn't" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">6. The town <input type="text" placeholder="..."> crowded.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Town — один объект. Нужно отрицание для единственного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для it возьми форму to be + not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is not (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are not|aren't" data-topic="to be: they (отрицание)">
+            <div class="question-text">7. The villages <input type="text" placeholder="..."> old.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Villages — это несколько деревень. Нужно отрицание для множественного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they возьми форму to be + not. Можно сократить: aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are not (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <div class="route-divider">✦ ✦ ✦</div>
+
+    <!-- ЗАДАНИЕ 3 -->
+    <div class="task-card" data-task-name="Task 3: Choose the Right Form (утверждение/отрицание)">
+        <div class="task-title">⚖️ Task 3: Choose the Right Form</div>
+        <div class="task-instruction">
+            Прочитай предложение и подсказку в скобках. Выбери правильную форму и напиши её в поле.
+            <span class="form-note">💡 Можно писать полную или краткую форму (is not / isn't).</span>
+        </div>
+
+        <div class="question-block" data-answer="is not|isn't" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">1. The village <input type="text" placeholder="..."> very small. (Она НЕ очень маленькая, она большая).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Тебе нужно отрицание для единственного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Возьми форму to be для it и добавь not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is not (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">2. The coasts <input type="text" placeholder="..."> beautiful. (Они красивые).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Побережий несколько. Тебе нужно утверждение, а не отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для множественного числа (they) какая форма to be подойдёт?</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="am not" data-topic="to be: I (отрицание)">
+            <div class="question-text">3. I <input type="text" placeholder="..."> in a noisy place. (Я НЕ в шумном месте).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Ты говоришь о себе и отрицаешь. Какая форма to be у "I"?</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Добавь not к форме для "I". Получится am not.</div>
+            <div class="hint-box answer">✅ Правильный ответ: am not</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">4. The downtown <input type="text" placeholder="..."> expensive. (Центр дорогой).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Downtown — это один объект. Утверждение.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для he/she/it нужна определённая форма to be.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are not|aren't" data-topic="to be: they (отрицание)">
+            <div class="question-text">5. The beaches <input type="text" placeholder="..."> quiet. (Пляжи НЕ тихие).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Пляжей много. И тебе нужно отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they возьми форму to be + not. Можно сократить: aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are not (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is not|isn't" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">6. The capital <input type="text" placeholder="..."> old. (Столица НЕ старая).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Capital — один объект. Нужно отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для it возьми форму to be + not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is not (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">7. The towns <input type="text" placeholder="..."> modern. (Города современные).</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Towns — это несколько городов. Утверждение.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they утверждение требует определённой формы.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <div class="route-divider">✦ ✦ ✦</div>
+
+    <!-- ЗАДАНИЕ 4 -->
+    <div class="task-card" data-task-name="Task 4: Pack Your Bags (утверждение/отрицание по контексту)">
+        <div class="task-title">🧳 Task 4: Pack Your Bags</div>
+        <div class="task-instruction">
+            Ты собираешь чемодан и описываешь места, которые посетишь. Составь предложение из слов в скобках. Выбери <b>утверждение</b>, если ты согласен с описанием, или <b>отрицание</b>, если не согласен.
+            <span class="form-note">💡 В отрицаниях можно использовать краткие формы: isn't, aren't.</span>
+        </div>
+        <div class="example">
+            <b>Example:</b> The beach (beautiful). — Согласен → The beach <b>is</b> beautiful.
+        </div>
+
+        <div class="question-block" data-answer="the coast is beautiful" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">1. The coast (beautiful). — Ты согласен, побережье красивое. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Coast — один объект. Тебе нужно утверждение.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Поставь форму to be для it перед прилагательным.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The coast is beautiful.</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the island is not noisy|the island isn't noisy" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">2. The island (noisy). — Ты НЕ согласен, остров не шумный. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Остров один. Тебе нужно отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Поставь форму to be для it + not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The island is not noisy. (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the streets are crowded" data-topic="to be: they (утверждение)">
+            <div class="question-text">3. The streets (crowded). — Ты согласен, улицы переполнены. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Улиц много. Тебе нужно утверждение.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they утверждение требует определённой формы to be.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The streets are crowded.</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the downtown is not cheap|the downtown isn't cheap" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">4. The downtown (cheap). — Ты НЕ согласен, центр не дешёвый. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Downtown — один объект. Тебе нужно отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Поставь форму to be для it + not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The downtown is not cheap. (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the beaches are quiet" data-topic="to be: they (утверждение)">
+            <div class="question-text">5. The beaches (quiet). — Ты согласен, пляжи тихие. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Пляжей много. Тебе нужно утверждение.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they утверждение требует определённой формы to be.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The beaches are quiet.</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the village is not modern|the village isn't modern" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">6. The village (modern). — Ты НЕ согласен, деревня не современная. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Village — один объект. Тебе нужно отрицание.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Поставь форму to be для it + not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The village is not modern. (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the towns are old" data-topic="to be: they (утверждение)">
+            <div class="question-text">7. The towns (old). — Ты согласен, города старые. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Towns — это несколько городов. Тебе нужно утверждение.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they утверждение требует определённой формы to be.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The towns are old.</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <div class="route-divider">✦ ✦ ✦</div>
+
+    <!-- ЗАДАНИЕ 5 -->
+    <div class="task-card" data-task-name="Task 5: Find the Mistake (исправление ошибок)">
+        <div class="task-title">🔍 Task 5: Find the Mistake</div>
+        <div class="task-instruction">
+            В каждом предложении есть ошибка в глаголе <b>to be</b>. Исправь её и напиши правильный вариант.
+            <span class="form-note">💡 Можно писать полную или краткую форму.</span>
+        </div>
+
+        <div class="question-block" data-answer="is" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">1. The island <b>are</b> very beautiful. → The island <input type="text" placeholder="..."> very beautiful.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Остров — это один или много? От этого зависит форма to be.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для одного объекта нужна другая форма, не are.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">2. The beaches <b>is</b> crowded. → The beaches <input type="text" placeholder="..."> crowded.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Пляжей несколько. Значит, форма to be должна быть для множественного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they нужна другая форма, не is.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="am not" data-topic="to be: I (отрицание, порядок слов)">
+            <div class="question-text">3. I <b>not am</b> in a noisy place. → I <input type="text" placeholder="..."> in a noisy place.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Порядок слов в отрицании нарушен. Вспомни правило: где стоит not?</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Сначала должна идти форма to be, а потом уже not.</div>
+            <div class="hint-box answer">✅ Правильный ответ: am not</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is not|isn't" data-topic="to be: he/she/it (отрицание)">
+            <div class="question-text">4. The capital <b>are not</b> cheap. → The capital <input type="text" placeholder="..."> cheap.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Capital — один объект. Значит, форма to be должна быть единственного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Поставь правильную форму to be + not для it. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is not (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are not|aren't" data-topic="to be: they (отрицание)">
+            <div class="question-text">5. The streets <b>is not</b> clean. → The streets <input type="text" placeholder="..."> clean.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Улиц несколько, и здесь ошибка в форме to be для отрицания.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they нужна форма are + not. Можно сократить: aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are not (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="is" data-topic="to be: he/she/it (утверждение)">
+            <div class="question-text">6. The town <b>are</b> quiet. → The town <input type="text" placeholder="..."> quiet.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Town — один объект. Форма to be должна быть единственного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для it нужна другая форма, не are.</div>
+            <div class="hint-box answer">✅ Правильный ответ: is</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="are" data-topic="to be: they (утверждение)">
+            <div class="question-text">7. The villages <b>is</b> old. → The villages <input type="text" placeholder="..."> old.</div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Villages — это несколько деревень. Форма to be должна быть для множественного числа.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Для they нужна другая форма, не is.</div>
+            <div class="hint-box answer">✅ Правильный ответ: are</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <div class="route-divider">✦ ✦ ✦</div>
+
+    <!-- ЗАДАНИЕ 6 -->
+    <div class="task-card" data-task-name="Task 6: Travel Diary (перевод)">
+        <div class="task-title">✍️ Task 6: Travel Diary</div>
+        <div class="task-instruction">
+            Переведи предложения на английский язык. <b>Внимание!</b> Не забудь про артикль <b>the</b> перед словами beach, island, streets, capital, beaches, town, villages.
+            <span class="form-note">💡 Помни о порядке слов и форме to be. Можно писать краткие формы (isn't, aren't).</span>
+        </div>
+        <div class="example">
+            <b>Example:</b> Пляж красивый. → <b>The</b> beach <b>is</b> beautiful.
+        </div>
+
+        <div class="question-block" data-answer="the beach is beautiful" data-topic="to be: he/she/it (утверждение) + артикль the">
+            <div class="question-text">1. Пляж красивый. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Начни с артикля The + подлежащее. Затем поставь нужную форму to be и прилагательное.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Пляж — один. Не забудь "the" перед beach.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The beach is beautiful.</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the island is not crowded|the island isn't crowded" data-topic="to be: he/she/it (отрицание) + артикль the">
+            <div class="question-text">2. Остров не переполненный. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Тебе нужно отрицание. Помни: not стоит после формы to be. И не забудь артикль.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: Остров — один объект. Используй The island + is + not. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The island is not crowded. (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the streets are noisy" data-topic="to be: they (утверждение) + артикль the">
+            <div class="question-text">3. Улицы шумные. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Улиц несколько. Не забудь артикль the перед streets.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: The streets — это they. Поставь правильную форму to be.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The streets are noisy.</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the capital is not old|the capital isn't old" data-topic="to be: he/she/it (отрицание) + артикль the">
+            <div class="question-text">4. Столица не старая. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Тебе нужно отрицание для одного объекта. Не забудь артикль.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: The capital — it. Поставь нужную форму to be + not перед прилагательным. Можно сократить: isn't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The capital is not old. (или isn't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the beaches are not expensive|the beaches aren't expensive" data-topic="to be: they (отрицание) + артикль the">
+            <div class="question-text">5. Пляжи не дорогие. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Пляжей несколько. И тебе нужно отрицание. Не забудь артикль.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: The beaches — это they. Поставь форму to be для they + not. Можно сократить: aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The beaches are not expensive. (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the town is quiet" data-topic="to be: he/she/it (утверждение) + артикль the">
+            <div class="question-text">6. Городок тихий. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Городок — это один объект. Утверждение. Не забудь артикль.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: The town — это it. Какая форма to be нужна?</div>
+            <div class="hint-box answer">✅ Правильный ответ: The town is quiet.</div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-block" data-answer="the villages are not modern|the villages aren't modern" data-topic="to be: they (отрицание) + артикль the">
+            <div class="question-text">7. Деревни не современные. → <input type="text" placeholder="..."></div>
+            <div class="input-group"><button class="check-btn" onclick="checkAnswer(this)">Проверить</button></div>
+            <div class="hint-box hint-1">💡 Подсказка: Деревень несколько. Нужно отрицание. Не забудь артикль.</div>
+            <div class="hint-box hint-2">💡 Подсказка 2: The villages — это they. Поставь форму to be для they + not. Можно сократить: aren't.</div>
+            <div class="hint-box answer">✅ Правильный ответ: The villages are not modern. (или aren't)</div>
+            <div class="feedback"></div>
+        </div>
+    </div>
+
+    <div class="route-divider">✦ ✦ ✦</div>
+
+    <!-- БЛОК РЕЗУЛЬТАТОВ -->
+    <div class="results-card" id="resultsCard">
+        <h2 class="results-title">📋 Your Travel Report</h2>
+        <p class="results-subtitle">Отчёт о пройденном путешествии. Проверь свои результаты и поделись ими с преподавателем.</p>
+
+        <div class="results-summary">
+            <div class="summary-item">
+                <div class="number" id="correctCount">0</div>
+                <div class="label">Правильно</div>
+            </div>
+            <div class="summary-item">
+                <div class="number" id="incorrectCount">0</div>
+                <div class="label">С ошибками</div>
+            </div>
+            <div class="summary-item highlight">
+                <div class="number" id="percentScore">0%</div>
+                <div class="label">Результат от всего теста</div>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h3>🔍 Задания, требующие внимания</h3>
+            <ul class="report-list" id="problemList">
+                <li class="report-empty">Пока нет данных. Пройди задания, и здесь появится разбор.</li>
+            </ul>
+        </div>
+
+        <div class="report-section">
+            <h3>📚 Темы для повторения</h3>
+            <ul class="report-list" id="topicList">
+                <li class="report-empty">Пока нет данных.</li>
+            </ul>
+        </div>
+
+        <button class="share-btn" onclick="shareResults()">📤 Поделиться с преподавателем</button>
+        <div class="copy-notice" id="copyNotice">✅ Отчёт скопирован! Вставь его в чат и отправь преподавателю.</div>
+    </div>
+
+</div>
+
+<script>
+    const attempts = new WeakMap();
+    const questionStats = new Map();
+
+    function normalizeAnswer(str) {
+        return str
+            .toLowerCase()
+            .trim()
+            .replace(/\.$/, '')
+            .replace(/'/g, "'")
+            .replace(/[‘’`´]/g, "'")
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function checkAnswer(button) {
+        const questionBlock = button.closest('.question-block');
+        const input = questionBlock.querySelector('input[type="text"]');
+        const feedback = questionBlock.querySelector('.feedback');
+        const hint1 = questionBlock.querySelector('.hint-1');
+        const hint2 = questionBlock.querySelector('.hint-2');
+        const answerHint = questionBlock.querySelector('.answer');
+        
+        const answerAttr = questionBlock.getAttribute('data-answer');
+        const correctVariants = answerAttr.split('|').map(v => normalizeAnswer(v));
+        
+        const userAnswer = normalizeAnswer(input.value);
+        const topic = questionBlock.getAttribute('data-topic') || 'Общая тема';
+        const questionText = questionBlock.querySelector('.question-text').textContent.trim().substring(0, 80);
+
+        if (!attempts.has(questionBlock)) {
+            attempts.set(questionBlock, 0);
+        }
+        let currentAttempts = attempts.get(questionBlock);
+
+        input.classList.remove('correct', 'incorrect');
+        feedback.classList.remove('correct', 'incorrect');
+        feedback.style.display = 'none';
+        
+        hint1.style.display = 'none';
+        hint2.style.display = 'none';
+        answerHint.style.display = 'none';
+
+        const isCorrect = correctVariants.includes(userAnswer);
+
+        if (isCorrect) {
+            input.classList.add('correct');
+            feedback.textContent = "✅ Отлично! Правильно.";
+            feedback.classList.add('correct');
+            input.disabled = true;
+            button.disabled = true;
+            button.textContent = 'Готово';
+            
+            questionStats.set(questionBlock, {
+                topic: topic,
+                question: questionText,
+                attempts: currentAttempts + 1,
+                correct: true,
+                usedHints: currentAttempts > 0,
+                userAnswer: input.value
+            });
+            
+            attempts.set(questionBlock, 0);
+            updateResults();
+        } else {
+            currentAttempts++;
+            attempts.set(questionBlock, currentAttempts);
+            
+            input.classList.add('incorrect');
+            feedback.textContent = "❌ Неправильно. Попробуй еще раз.";
+            feedback.classList.add('incorrect');
+
+            if (currentAttempts === 1) {
+                hint1.style.display = 'block';
+            } else if (currentAttempts === 2) {
+                hint1.style.display = 'block';
+                hint2.style.display = 'block';
+            } else if (currentAttempts >= 3) {
+                hint1.style.display = 'block';
+                hint2.style.display = 'block';
+                answerHint.style.display = 'block';
+                
+                const displayAnswer = correctVariants[0];
+                input.value = displayAnswer;
+                input.classList.remove('incorrect');
+                input.classList.add('correct');
+                input.disabled = true;
+                button.disabled = true;
+                button.textContent = 'Готово';
+                feedback.textContent = "👀 Правильный ответ показан выше.";
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                
+                questionStats.set(questionBlock, {
+                    topic: topic,
+                    question: questionText,
+                    attempts: currentAttempts,
+                    correct: false,
+                    usedHints: true,
+                    userAnswer: displayAnswer
+                });
+                
+                updateResults();
+            }
+        }
+    }
+
+    function updateResults() {
+        const allQuestions = document.querySelectorAll('.question-block');
+        const totalQuestions = allQuestions.length;
+        let correct = 0;
+        let incorrect = 0;
+        const problems = [];
+        const topics = {};
+
+        allQuestions.forEach(q => {
+            if (questionStats.has(q)) {
+                const stat = questionStats.get(q);
+                if (stat.correct) {
+                    correct++;
+                } else {
+                    incorrect++;
+                }
+                if (!stat.correct || stat.usedHints) {
+                    problems.push(stat);
+                }
+                if (!topics[stat.topic]) {
+                    topics[stat.topic] = { total: 0, errors: 0 };
+                }
+                topics[stat.topic].total++;
+                if (!stat.correct || stat.usedHints) {
+                    topics[stat.topic].errors++;
+                }
+            }
+        });
+
+        // Процент от ВСЕГО теста
+        const percent = totalQuestions > 0 ? Math.round((correct / totalQuestions) * 100) : 0;
+
+        document.getElementById('correctCount').textContent = correct;
+        document.getElementById('incorrectCount').textContent = incorrect;
+        document.getElementById('percentScore').textContent = percent + '%';
+
+        const problemList = document.getElementById('problemList');
+        problemList.innerHTML = '';
+        if (problems.length === 0) {
+            problemList.innerHTML = '<li class="report-empty">Пока нет данных или все задания выполнены без ошибок. Отлично!</li>';
+        } else {
+            problems.forEach(p => {
+                const li = document.createElement('li');
+                li.className = p.correct ? 'hint-used' : 'problem';
+                const status = p.correct ? '⚠️ Использованы подсказки' : '❌ Не справился самостоятельно';
+                li.innerHTML = `<b>${status}</b> · ${p.topic}<br><small>${p.question}... · попыток: ${p.attempts}</small>`;
+                problemList.appendChild(li);
+            });
+        }
+
+        const topicList = document.getElementById('topicList');
+        topicList.innerHTML = '';
+        const topicEntries = Object.entries(topics).filter(([t, d]) => d.errors > 0);
+        if (topicEntries.length === 0) {
+            topicList.innerHTML = '<li class="report-empty">Все темы отработаны хорошо. Так держать!</li>';
+        } else {
+            topicEntries.forEach(([topic, data]) => {
+                const li = document.createElement('li');
+                li.className = 'problem';
+                li.innerHTML = `<b>${topic}</b> — ошибок: ${data.errors} из ${data.total}`;
+                topicList.appendChild(li);
+            });
+        }
+    }
+
+    function shareResults() {
+        const allQuestions = document.querySelectorAll('.question-block');
+        const totalQuestions = allQuestions.length;
+        let correct = 0;
+        let incorrect = 0;
+        const problems = [];
+        const topics = {};
+
+        allQuestions.forEach(q => {
+            if (questionStats.has(q)) {
+                const stat = questionStats.get(q);
+                if (stat.correct) correct++; else incorrect++;
+                if (!stat.correct || stat.usedHints) problems.push(stat);
+                if (!topics[stat.topic]) topics[stat.topic] = { total: 0, errors: 0 };
+                topics[stat.topic].total++;
+                if (!stat.correct || stat.usedHints) topics[stat.topic].errors++;
+            }
+        });
+
+        const percent = totalQuestions > 0 ? Math.round((correct / totalQuestions) * 100) : 0;
+
+        let report = '📋 TRAVEL QUEST — ОТЧЁТ О РЕЗУЛЬТАТАХ\n';
+        report += '=====================================\n\n';
+        report += `✅ Правильно: ${correct} из ${totalQuestions}\n`;
+        report += `❌ С ошибками: ${incorrect}\n`;
+        report += `📊 Результат: ${percent}% от всего теста\n\n`;
+
+        report += '🔍 ЗАДАНИЯ, ТРЕБУЮЩИЕ ВНИМАНИЯ:\n';
+        report += '-------------------------------------\n';
+        if (problems.length === 0) {
+            report += 'Все задания выполнены без ошибок!\n';
+        } else {
+            problems.forEach((p, i) => {
+                const status = p.correct ? '⚠️ Использованы подсказки' : '❌ Не справился самостоятельно';
+                report += `${i+1}. ${status}\n`;
+                report += `   Тема: ${p.topic}\n`;
+                report += `   Вопрос: ${p.question}...\n`;
+                report += `   Попыток: ${p.attempts}\n\n`;
+            });
+        }
+
+        report += '\n📚 ТЕМЫ ДЛЯ ПОВТОРЕНИЯ:\n';
+        report += '-------------------------------------\n';
+        const topicEntries = Object.entries(topics).filter(([t, d]) => d.errors > 0);
+        if (topicEntries.length === 0) {
+            report += 'Все темы отработаны хорошо.\n';
+        } else {
+            topicEntries.forEach(([topic, data]) => {
+                report += `• ${topic} — ошибок: ${data.errors} из ${data.total}\n`;
+            });
+        }
+
+        report += '\n=====================================\n';
+        report += 'Отправлено из Travel Quest ✈️';
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(report).then(() => {
+                showCopyNotice();
+            }).catch(() => {
+                fallbackCopy(report);
+            });
+        } else {
+            fallbackCopy(report);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showCopyNotice();
+        } catch (e) {
+            alert('Не удалось скопировать. Пожалуйста, скопируйте отчёт вручную.');
+        }
+        document.body.removeChild(textarea);
+    }
+
+    function showCopyNotice() {
+        const notice = document.getElementById('copyNotice');
+        notice.style.display = 'block';
+        setTimeout(() => {
+            notice.style.display = 'none';
+        }, 4000);
+    }
+
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const button = this.closest('.question-block').querySelector('.check-btn');
+                if (!button.disabled) {
+                    checkAnswer(button);
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
